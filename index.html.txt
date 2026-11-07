@@ -1,33 +1,1440 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ATEMPORAL - Organiza tus días</title>
-    <style>
-        body { font-family: sans-serif; background-color: #f4f7f6; color: #333; max-width: 600px; margin: 40px auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h1 { color: #2c3e50; text-align: center; margin-bottom: 5px; }
-        .slogan { text-align: center; color: #7f8c8d; font-style: italic; margin-bottom: 20px; }
-        .fecha { text-align: center; font-weight: bold; color: #16a085; }
-        .seccion { margin-top: 25px; padding-top: 15px; border-top: 1px solid #eee; }
-        input[type="text"] { width: 70%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
-        button { padding: 8px 15px; background-color: #16a085; color: white; border: none; border-radius: 4px; cursor: pointer; }
-        button:hover { background-color: #117a65; }
-        ul { list-style-type: none; padding: 0; }
-        li { padding: 10px; background: #f9f9f9; margin-bottom: 5px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
-        .completada { text-decoration: line-through; color: #bdc3c7; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ATEMPORAL | Tu espacio personal</title>
+
+<style>
+:root {
+  --bg: #f5f7f6;
+  --surface: #ffffff;
+  --soft: #edf3f0;
+  --accent: #536d67;
+  --accent-dark: #3e5851;
+  --accent-light: #dfeae5;
+  --text: #26332f;
+  --muted: #82918b;
+  --border: #e5ebe7;
+  --danger: #bd6868;
+  --shadow: 0 5px 20px rgba(37, 58, 48, .05);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Inter, Arial, sans-serif;
+}
+
+button, input, textarea, select {
+  font: inherit;
+}
+
+button { cursor: pointer; }
+
+.hidden { display: none !important; }
+
+/* ACCESO */
+
+#login-screen {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 390px;
+  background: white;
+  padding: 38px;
+  border-radius: 22px;
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+
+.logo {
+  color: var(--accent);
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: 5px;
+}
+
+.login-card p {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+input, textarea, select {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  background: white;
+  color: var(--text);
+  outline: none;
+  margin: 5px 0 12px;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--accent);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.primary {
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 18px;
+  font-weight: 600;
+}
+
+.primary:hover { background: var(--accent-dark); }
+
+.login-card .primary { width: 100%; }
+
+.message {
+  font-size: 13px;
+  color: var(--danger);
+  min-height: 20px;
+}
+
+/* APLICACIÓN */
+
+#app {
+  min-height: 100vh;
+  display: flex;
+}
+
+.sidebar {
+  width: 245px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 28px 18px;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+}
+
+.sidebar .logo {
+  font-size: 22px;
+  margin: 0 0 8px 12px;
+}
+
+.sidebar-subtitle {
+  color: var(--muted);
+  font-size: 12px;
+  margin: 0 0 30px 12px;
+}
+
+.nav-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--muted);
+  margin: 15px 12px 10px;
+}
+
+.nav-btn {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: #697871;
+  text-align: left;
+  padding: 12px;
+  border-radius: 10px;
+  margin: 3px 0;
+  font-size: 14px;
+}
+
+.nav-btn:hover, .nav-btn.active {
+  background: var(--accent-light);
+  color: var(--accent-dark);
+  font-weight: 700;
+}
+
+.sidebar-bottom {
+  margin-top: auto;
+  border-top: 1px solid var(--border);
+  padding-top: 15px;
+}
+
+.logout {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  color: var(--danger);
+  padding: 12px;
+  text-align: left;
+}
+
+.main {
+  width: calc(100% - 245px);
+  margin-left: 245px;
+  padding: 35px 42px 60px;
+  max-width: 1600px;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 35px;
+}
+
+.topbar small { color: var(--muted); }
+
+.topbar strong {
+  display: block;
+  margin-top: 5px;
+}
+
+h1 {
+  font-size: 27px;
+  margin: 0 0 8px;
+}
+
+.subtitle {
+  color: var(--muted);
+  margin: 0 0 25px;
+  font-size: 14px;
+}
+
+.section { display: none; }
+.section.active { display: block; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 25px;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  padding: 21px;
+  box-shadow: var(--shadow);
+}
+
+.card-label {
+  color: var(--muted);
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+
+.card-value {
+  font-size: 25px;
+  font-weight: 750;
+}
+
+.card-note {
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 7px;
+}
+
+.panel {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  padding: 23px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.panel h2 {
+  font-size: 16px;
+  margin: 0;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 14px;
+}
+
+.form-grid .full { grid-column: 1 / -1; }
+
+label {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 5px;
+}
+
+.item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.item:last-child { border-bottom: 0; }
+
+.item-content { flex: 1; min-width: 0; }
+
+.item-title {
+  font-size: 14px;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+
+.item-description {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 5px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.item.completed .item-title {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+
+.item-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.small-btn {
+  border: 1px solid var(--border);
+  background: white;
+  color: var(--accent);
+  border-radius: 7px;
+  padding: 7px 9px;
+  font-size: 11px;
+}
+
+.small-btn:hover { background: var(--soft); }
+
+.delete-btn { color: var(--danger); }
+
+.empty {
+  color: var(--muted);
+  text-align: center;
+  padding: 25px 10px;
+  font-size: 13px;
+}
+
+.progress {
+  height: 7px;
+  background: var(--soft);
+  border-radius: 20px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.progress span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  border-radius: 20px;
+}
+
+.pill {
+  display: inline-block;
+  background: var(--accent-light);
+  color: var(--accent-dark);
+  padding: 5px 9px;
+  border-radius: 20px;
+  font-size: 10px;
+  margin-top: 7px;
+}
+
+.money-income { color: #56836d; }
+.money-expense { color: var(--danger); }
+
+.calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 7px;
+  margin-top: 15px;
+}
+
+.day {
+  background: var(--soft);
+  border-radius: 8px;
+  text-align: center;
+  padding: 9px 3px;
+  font-size: 11px;
+}
+
+.day.done {
+  background: var(--accent);
+  color: white;
+}
+
+.day-name {
+  color: var(--muted);
+  text-align: center;
+  font-size: 10px;
+}
+
+.toast {
+  position: fixed;
+  bottom: 22px;
+  right: 22px;
+  background: var(--accent-dark);
+  color: white;
+  padding: 13px 18px;
+  border-radius: 10px;
+  font-size: 13px;
+  box-shadow: var(--shadow);
+  z-index: 30;
+}
+
+.mobile-menu {
+  display: none;
+  border: 1px solid var(--border);
+  background: white;
+  padding: 9px 12px;
+  border-radius: 9px;
+}
+
+@media (max-width: 1000px) {
+  .grid { grid-template-columns: repeat(2, 1fr); }
+  .main { padding: 28px 24px; }
+}
+
+@media (max-width: 700px) {
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform .25s;
+    box-shadow: var(--shadow);
+  }
+
+  .sidebar.open { transform: translateX(0); }
+
+  .main {
+    margin-left: 0;
+    width: 100%;
+    padding: 20px 15px 45px;
+  }
+
+  .mobile-menu { display: block; }
+  .topbar { gap: 12px; }
+  .grid { gap: 10px; }
+  .card { padding: 15px; }
+  .card-value { font-size: 21px; }
+  .panel { padding: 17px; }
+  .form-grid { grid-template-columns: 1fr; }
+  .form-grid .full { grid-column: auto; }
+  h1 { font-size: 23px; }
+}
+</style>
 </head>
+
 <body>
-    <h1>ATEMPORAL</h1>
-    <p class="slogan">Organiza tus días. Construye tu futuro.</p>
-    <p class="fecha" id="fecha-actual"></p>
-    <div class="seccion">
-        <h3>Mis Tareas</h3>
-        <input type="text" id="nueva-tarea" placeholder="Escribe una nueva tarea...">
-        <button onclick="agregarTareaWeb()">Agregar</button>
-        <ul id="lista-tareas"></ul>
+
+<!-- ACCESO -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="logo">ATEMPORAL</div>
+    <p>Un espacio para organizar tus días, construir tus metas y avanzar a tu ritmo.</p>
+
+    <form id="login-form">
+      <label for="access-code">Tu código de acceso</label>
+      <input id="access-code" type="password"
+        placeholder="Ingresa tu código" required autocomplete="off">
+      <button class="primary" type="submit">Ingresar</button>
+    </form>
+    <div id="login-message" class="message"></div>
+  </div>
+</div>
+
+<!-- APLICACIÓN -->
+<div id="app" class="hidden">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">ATEMPORAL</div>
+    <div class="sidebar-subtitle">Organiza. Construye. Avanza.</div>
+
+    <div class="nav-label">GENERAL</div>
+    <button class="nav-btn active" data-section="home">⌂ &nbsp; Inicio</button>
+
+    <div class="nav-label">ORGANIZACIÓN</div>
+    <button class="nav-btn" data-section="tasks">☷ &nbsp; Tareas</button>
+    <button class="nav-btn" data-section="goals">◎ &nbsp; Objetivos</button>
+    <button class="nav-btn" data-section="habits">↻ &nbsp; Hábitos</button>
+    <button class="nav-btn" data-section="notes">▤ &nbsp; Notas</button>
+
+    <div class="nav-label">CONTROL</div>
+    <button class="nav-btn" data-section="finance">◇ &nbsp; Finanzas</button>
+    <button class="nav-btn" data-section="stats">▥ &nbsp; Estadísticas</button>
+
+    <div class="sidebar-bottom">
+      <button class="logout" id="logout-btn">↪ &nbsp; Cambiar de usuario</button>
     </div>
-    <script src="index.js"></script>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <button class="mobile-menu" id="menu-btn">☰</button>
+      <div>
+        <small id="today-label"></small>
+        <strong>Tu espacio personal</strong>
+      </div>
+      <small>ATEMPORAL 2.0</small>
+    </div>
+
+    <!-- INICIO -->
+    <section id="home" class="section active">
+      <h1>Bienvenido a ATEMPORAL</h1>
+      <p class="subtitle">Cada pequeño avance cuenta. Este es tu resumen.</p>
+
+      <div class="grid">
+        <div class="card">
+          <div class="card-label">Tareas pendientes</div>
+          <div class="card-value" id="home-pending">0</div>
+          <div class="card-note">Por completar</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Objetivos activos</div>
+          <div class="card-value" id="home-goals">0</div>
+          <div class="card-note">En desarrollo</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Hábitos de hoy</div>
+          <div class="card-value" id="home-habits">0/0</div>
+          <div class="card-note">Completados</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Balance actual</div>
+          <div class="card-value" id="home-balance">S/ 0.00</div>
+          <div class="card-note">Ingresos menos gastos</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header"><h2>Mis tareas pendientes</h2></div>
+        <div id="home-task-list"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header"><h2>Mis hábitos de hoy</h2></div>
+        <div id="home-habit-list"></div>
+      </div>
+    </section>
+
+    <!-- TAREAS -->
+    <section id="tasks" class="section">
+      <h1>Mis tareas</h1>
+      <p class="subtitle">Organiza tus actividades y avanza paso a paso.</p>
+
+      <div class="panel">
+        <div class="panel-header"><h2>Nueva tarea</h2></div>
+        <form id="task-form" class="form-grid">
+          <div class="full">
+            <label>Nombre de la tarea</label>
+            <input name="title" placeholder="Ej. Terminar trabajo de historia" required>
+          </div>
+          <div>
+            <label>Fecha límite</label>
+            <input name="date" type="date">
+          </div>
+          <div>
+            <label>Prioridad</label>
+            <select name="priority">
+              <option value="Normal">Normal</option>
+              <option value="Alta">Alta</option>
+              <option value="Baja">Baja</option>
+            </select>
+          </div>
+          <div class="full">
+            <label>Descripción</label>
+            <textarea name="description" placeholder="Detalles de la tarea..."></textarea>
+          </div>
+          <div class="full"><button class="primary">Agregar tarea</button></div>
+        </form>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header"><h2>Lista de tareas</h2></div>
+        <div id="task-list"></div>
+      </div>
+    </section>
+
+    <!-- OBJETIVOS -->
+    <section id="goals" class="section">
+      <h1>Mis objetivos</h1>
+      <p class="subtitle">Convierte tus ideas en metas concretas.</p>
+
+      <div class="panel">
+        <div class="panel-header"><h2>Nuevo objetivo</h2></div>
+        <form id="goal-form" class="form-grid">
+          <div class="full">
+            <label>Nombre del objetivo</label>
+            <input name="title" placeholder="Ej. Aprender programación" required>
+          </div>
+          <div>
+            <label>Fecha objetivo</label>
+            <input name="date" type="date">
+          </div>
+          <div>
+            <label>Progreso inicial (%)</label>
+            <input name="progress" type="number" min="0" max="100" value="0">
+          </div>
+          <div class="full">
+            <label>Descripción</label>
+            <textarea name="description" placeholder="¿Qué quieres conseguir?"></textarea>
+          </div>
+          <div class="full"><button class="primary">Agregar objetivo</button></div>
+        </form>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header"><h2>Mis objetivos</h2></div>
+        <div id="goal-list"></div>
+      </div>
+    </section>
+
+    <!-- HÁBITOS -->
+    <section id="habits" class="section">
+      <h1>Mis hábitos</h1>
+      <p class="subtitle">La constancia se construye con pequeñas acciones.</p>
+
+      <div class="panel">
+        <div class="panel-header"><h2>Crear hábito</h2></div>
+        <form id="habit-form" class="form-grid">
+          <div class="full">
+            <label>Nombre del hábito</label>
+            <input name="title" placeholder="Ej. Leer 20 minutos" required>
+          </div>
+          <div class="full">
+            <label>Descripción</label>
+            <textarea name="description" placeholder="¿Cómo quieres practicarlo?"></textarea>
+          </div>
+          <div class="full"><button class="primary">Agregar hábito</button></div>
+        </form>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header"><h2>Seguimiento diario</h2></div>
+        <div id="habit-list"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header"><h2>Actividad de los últimos 7 días</h2></div>
+        <div id="habit-calendar" class="calendar"></div>
+      </div>
+    </section>
+
+    <!-- NOTAS -->
+    <section id="notes" class="section">
+      <h1>Mis notas</h1>
+      <p class="subtitle">Un lugar para guardar ideas y pensamientos.</p>
+
+      <div class="panel">
+        <div class="panel-header"><h2>Nueva nota</h2></div>
+        <form id="note-form">
+          <label>Título</label>
+          <input name="title" placeholder="Título de tu nota" required>
+          <label>Contenido</label>
+          <textarea name="content" placeholder="Escribe aquí..." required></textarea>
+          <button class="primary">Guardar nota</button>
+        </form>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header"><h2>Notas guardadas</h2></div>
+        <div id="note-list"></div>
+      </div>
+    </section>
+
+    <!-- FINANZAS -->
+    <section id="finance" class="section">
+      <h1>Mis finanzas</h1>
+      <p class="subtitle">Registra tus movimientos y observa tu balance.</p>
+
+      <div class="grid">
+        <div class="card">
+          <div class="card-label">Ingresos</div>
+          <div class="card-value money-income" id="income-total">S/ 0.00</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Gastos</div>
+          <div class="card-value money-expense" id="expense-total">S/ 0.00</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Balance</div>
+          <div class="card-value" id="balance-total">S/ 0.00</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Movimientos</div>
+          <div class="card-value" id="movement-count">0</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header"><h2>Nuevo movimiento</h2></div>
+        <form id="movement-form" class="form-grid">
+          <div class="full">
+            <label>Descripción</label>
+            <input name="description" placeholder="Ej. Compra de materiales" required>
+          </div>
+          <div>
+            <label>Monto (S/)</label>
+            <input name="amount" type="number" min="0.01" step="0.01" placeholder="0.00" required>
+          </div>
+          <div>
+            <label>Tipo</label>
+            <select name="type">
+              <option value="income">Ingreso</option>
+              <option value="expense">Gasto</option>
+            </select>
+          </div>
+          <div>
+            <label>Fecha</label>
+            <input name="date" type="date" id="movement-date" required>
+          </div>
+          <div class="full"><button class="primary">Registrar movimiento</button></div>
+        </form>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header"><h2>Historial de movimientos</h2></div>
+        <div id="movement-list"></div>
+      </div>
+    </section>
+
+    <!-- ESTADÍSTICAS -->
+    <section id="stats" class="section">
+      <h1>Mis estadísticas</h1>
+      <p class="subtitle">Observa tus avances y tu actividad.</p>
+
+      <div class="grid">
+        <div class="card">
+          <div class="card-label">Tareas completadas</div>
+          <div class="card-value" id="stat-tasks">0</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Objetivos alcanzados</div>
+          <div class="card-value" id="stat-goals">0</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Hábitos registrados</div>
+          <div class="card-value" id="stat-habits">0</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Notas creadas</div>
+          <div class="card-value" id="stat-notes">0</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Resumen de productividad</h2>
+        <div id="stats-summary" style="margin-top:15px"></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div id="toast" class="toast hidden" role="status"></div>
+
+<script>
+"use strict";
+
+/* =========================================
+   CONFIGURACIÓN DE CÓDIGOS DE ACCESO
+   Cambia estos ejemplos por tus propios códigos.
+   Recuerda: no son autenticación segura.
+========================================= */
+
+const ACCESS_CODES = [
+  "ATEMPORAL-001",
+  "ATEMPORAL-002",
+  "ATEMPORAL-003"
+];
+
+/* =========================================
+   UTILIDADES
+========================================= */
+
+const $ = id => document.getElementById(id);
+
+const today = () => {
+  const d = new Date();
+  const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
+  return local.toISOString().slice(0, 10);
+};
+
+const uid = () =>
+  Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+
+const escapeHTML = value => String(value ?? "").replace(/[&<>"']/g, char => ({
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#039;"
+}[char]));
+
+const money = value =>
+  "S/ " + Number(value || 0).toFixed(2);
+
+let currentCode = "";
+let data = null;
+let toastTimer;
+
+/* =========================================
+   DATOS Y ALMACENAMIENTO
+========================================= */
+
+function emptyData() {
+  return {
+    tasks: [],
+    goals: [],
+    habits: [],
+    habitLogs: {},
+    notes: [],
+    movements: []
+  };
+}
+
+function storageKey() {
+  return "at_temporal_v1_" + currentCode;
+}
+
+function loadData() {
+  try {
+    const saved = localStorage.getItem(storageKey());
+    data = saved ? { ...emptyData(), ...JSON.parse(saved) } : emptyData();
+  } catch (error) {
+    data = emptyData();
+    notify("No se pudieron cargar los datos anteriores.");
+  }
+}
+
+function saveData() {
+  try {
+    localStorage.setItem(storageKey(), JSON.stringify(data));
+    renderAll();
+  } catch (error) {
+    notify("No se pudo guardar. Revisa el espacio disponible.");
+  }
+}
+
+function notify(message) {
+  $("toast").textContent = message;
+  $("toast").classList.remove("hidden");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => $("toast").classList.add("hidden"), 2500);
+}
+
+/* =========================================
+   ACCESO
+========================================= */
+
+$("login-form").addEventListener("submit", event => {
+  event.preventDefault();
+
+  const code = $("access-code").value.trim();
+
+  if (!ACCESS_CODES.includes(code)) {
+    $("login-message").textContent = "El código ingresado no es válido.";
+    return;
+  }
+
+  currentCode = code;
+  loadData();
+
+  $("login-message").textContent = "";
+  $("access-code").value = "";
+  $("login-screen").classList.add("hidden");
+  $("app").classList.remove("hidden");
+
+  $("movement-date").value = today();
+  showSection("home");
+  renderAll();
+});
+
+$("logout-btn").addEventListener("click", () => {
+  currentCode = "";
+  data = null;
+  $("app").classList.add("hidden");
+  $("login-screen").classList.remove("hidden");
+  $("login-message").textContent = "";
+  $("access-code").value = "";
+});
+
+/* =========================================
+   NAVEGACIÓN
+========================================= */
+
+function showSection(name) {
+  document.querySelectorAll(".section").forEach(section => {
+    section.classList.toggle("active", section.id === name);
+  });
+
+  document.querySelectorAll(".nav-btn").forEach(button => {
+    button.classList.toggle("active", button.dataset.section === name);
+  });
+
+  $("sidebar").classList.remove("open");
+}
+
+document.querySelectorAll(".nav-btn").forEach(button => {
+  button.addEventListener("click", () => showSection(button.dataset.section));
+});
+
+$("menu-btn").addEventListener("click", () => {
+  $("sidebar").classList.toggle("open");
+});
+
+/* =========================================
+   FORMULARIOS
+========================================= */
+
+function formObject(form) {
+  return Object.fromEntries(new FormData(form).entries());
+}
+
+$("task-form").addEventListener("submit", event => {
+  event.preventDefault();
+  const f = formObject(event.currentTarget);
+
+  data.tasks.unshift({
+    id: uid(),
+    title: f.title.trim(),
+    date: f.date,
+    priority: f.priority,
+    description: f.description.trim(),
+    completed: false,
+    created: today()
+  });
+
+  event.currentTarget.reset();
+  saveData();
+  notify("Tarea agregada.");
+});
+
+$("goal-form").addEventListener("submit", event => {
+  event.preventDefault();
+  const f = formObject(event.currentTarget);
+
+  data.goals.unshift({
+    id: uid(),
+    title: f.title.trim(),
+    date: f.date,
+    progress: Math.min(100, Math.max(0, Number(f.progress) || 0)),
+    description: f.description.trim()
+  });
+
+  event.currentTarget.reset();
+  saveData();
+  notify("Objetivo agregado.");
+});
+
+$("habit-form").addEventListener("submit", event => {
+  event.preventDefault();
+  const f = formObject(event.currentTarget);
+
+  data.habits.unshift({
+    id: uid(),
+    title: f.title.trim(),
+    description: f.description.trim()
+  });
+
+  event.currentTarget.reset();
+  saveData();
+  notify("Hábito agregado.");
+});
+
+$("note-form").addEventListener("submit", event => {
+  event.preventDefault();
+  const f = formObject(event.currentTarget);
+
+  data.notes.unshift({
+    id: uid(),
+    title: f.title.trim(),
+    content: f.content.trim(),
+    date: today()
+  });
+
+  event.currentTarget.reset();
+  saveData();
+  notify("Nota guardada.");
+});
+
+$("movement-form").addEventListener("submit", event => {
+  event.preventDefault();
+  const f = formObject(event.currentTarget);
+  const amount = Number(f.amount);
+
+  if (!Number.isFinite(amount) || amount <= 0) {
+    notify("Ingresa un monto válido.");
+    return;
+  }
+
+  data.movements.unshift({
+    id: uid(),
+    description: f.description.trim(),
+    amount,
+    type: f.type,
+    date: f.date
+  });
+
+  event.currentTarget.reset();
+  $("movement-date").value = today();
+  saveData();
+  notify("Movimiento registrado.");
+});
+
+/* =========================================
+   ACCIONES: COMPLETAR, EDITAR Y ELIMINAR
+========================================= */
+
+function findItem(type, id) {
+  return data[type].find(item => item.id === id);
+}
+
+function removeItem(type, id) {
+  if (!confirm("¿Seguro que deseas eliminar este elemento?")) return;
+
+  data[type] = data[type].filter(item => item.id !== id);
+
+  if (type === "habits") {
+    Object.keys(data.habitLogs).forEach(day => {
+      delete data.habitLogs[day][id];
+    });
+  }
+
+  saveData();
+  notify("Elemento eliminado.");
+}
+
+function editText(type, id, field, label) {
+  const item = findItem(type, id);
+  if (!item) return;
+
+  const value = prompt("Editar " + label + ":", item[field] || "");
+  if (value === null) return;
+
+  if (!value.trim()) {
+    notify("El campo no puede estar vacío.");
+    return;
+  }
+
+  item[field] = value.trim();
+  saveData();
+  notify("Cambios guardados.");
+}
+
+function editNumber(type, id, field, label, min, max) {
+  const item = findItem(type, id);
+  if (!item) return;
+
+  const value = prompt("Nuevo valor para " + label + ":", item[field]);
+  if (value === null) return;
+
+  const number = Number(value);
+
+  if (!Number.isFinite(number) || number < min || number > max) {
+    notify("Ingresa un número entre " + min + " y " + max + ".");
+    return;
+  }
+
+  item[field] = number;
+  saveData();
+  notify("Cambios guardados.");
+}
+
+function toggleTask(id) {
+  const item = findItem("tasks", id);
+  if (!item) return;
+  item.completed = !item.completed;
+  saveData();
+}
+
+function updateGoal(id) {
+  editNumber("goals", id, "progress", "progreso", 0, 100);
+}
+
+function toggleHabit(id) {
+  const day = today();
+  if (!data.habitLogs[day]) data.habitLogs[day] = {};
+
+  data.habitLogs[day][id] = !data.habitLogs[day][id];
+  saveData();
+}
+
+function editMovement(id) {
+  const item = findItem("movements", id);
+  if (!item) return;
+
+  const value = prompt("Nuevo monto en soles:", item.amount);
+  if (value === null) return;
+
+  const amount = Number(value);
+  if (!Number.isFinite(amount) || amount <= 0) {
+    notify("Ingresa un monto válido.");
+    return;
+  }
+
+  item.amount = amount;
+  saveData();
+  notify("Monto actualizado.");
+}
+
+/* =========================================
+   REPRESENTACIÓN DE ELEMENTOS
+========================================= */
+
+function emptyMessage(text) {
+  return `<div class="empty">${escapeHTML(text)}</div>`;
+}
+
+function taskHTML(task) {
+  return `
+    <div class="item ${task.completed ? "completed" : ""}">
+      <div class="item-content">
+        <div class="item-title">${escapeHTML(task.title)}</div>
+        <div class="item-description">
+          ${escapeHTML(task.description)}
+          ${task.date ? " · Fecha: " + escapeHTML(task.date) : ""}
+        </div>
+        <span class="pill">${escapeHTML(task.priority || "Normal")}</span>
+      </div>
+      <div class="item-actions">
+        <button class="small-btn" data-action="task-toggle" data-id="${task.id}">
+          ${task.completed ? "Deshacer" : "Completar"}
+        </button>
+        <button class="small-btn" data-action="task-edit" data-id="${task.id}">Editar</button>
+        <button class="small-btn delete-btn" data-action="task-delete" data-id="${task.id}">Eliminar</button>
+      </div>
+    </div>`;
+}
+
+function goalHTML(goal) {
+  return `
+    <div class="item">
+      <div class="item-content">
+        <div class="item-title">${escapeHTML(goal.title)}</div>
+        <div class="item-description">${escapeHTML(goal.description)}</div>
+        <div class="progress"><span style="width:${goal.progress}%"></span></div>
+        <div class="item-description">
+          ${goal.progress}% completado
+          ${goal.date ? " · Fecha: " + escapeHTML(goal.date) : ""}
+        </div>
+      </div>
+      <div class="item-actions">
+        <button class="small-btn" data-action="goal-progress" data-id="${goal.id}">Progreso</button>
+        <button class="small-btn" data-action="goal-edit" data-id="${goal.id}">Editar</button>
+        <button class="small-btn delete-btn" data-action="goal-delete" data-id="${goal.id}">Eliminar</button>
+      </div>
+    </div>`;
+}
+
+function habitHTML(habit) {
+  const done = Boolean(data.habitLogs[today()]?.[habit.id]);
+
+  return `
+    <div class="item ${done ? "completed" : ""}">
+      <div class="item-content">
+        <div class="item-title">${escapeHTML(habit.title)}</div>
+        <div class="item-description">${escapeHTML(habit.description)}</div>
+        <span class="pill">${done ? "Completado hoy" : "Pendiente hoy"}</span>
+      </div>
+      <div class="item-actions">
+        <button class="small-btn" data-action="habit-toggle" data-id="${habit.id}">
+          ${done ? "Desmarcar" : "Completar"}
+        </button>
+        <button class="small-btn" data-action="habit-edit" data-id="${habit.id}">Editar</button>
+        <button class="small-btn delete-btn" data-action="habit-delete" data-id="${habit.id}">Eliminar</button>
+      </div>
+    </div>`;
+}
+
+function noteHTML(note) {
+  return `
+    <div class="item">
+      <div class="item-content">
+        <div class="item-title">${escapeHTML(note.title)}</div>
+        <div class="item-description">${escapeHTML(note.content)}</div>
+        <span class="pill">${escapeHTML(note.date)}</span>
+      </div>
+      <div class="item-actions">
+        <button class="small-btn" data-action="note-edit" data-id="${note.id}">Editar</button>
+        <button class="small-btn delete-btn" data-action="note-delete" data-id="${note.id}">Eliminar</button>
+      </div>
+    </div>`;
+}
+
+function movementHTML(item) {
+  const income = item.type === "income";
+
+  return `
+    <div class="item">
+      <div class="item-content">
+        <div class="item-title">${escapeHTML(item.description)}</div>
+        <div class="item-description">${escapeHTML(item.date)}</div>
+      </div>
+      <strong class="${income ? "money-income" : "money-expense"}">
+        ${income ? "+" : "-"} ${money(item.amount)}
+      </strong>
+      <div class="item-actions">
+        <button class="small-btn" data-action="movement-edit" data-id="${item.id}">Monto</button>
+        <button class="small-btn delete-btn" data-action="movement-delete" data-id="${item.id}">Eliminar</button>
+      </div>
+    </div>`;
+}
+
+/* =========================================
+   EVENTOS DE ACCIONES
+========================================= */
+
+document.addEventListener("click", event => {
+  const button = event.target.closest("[data-action]");
+  if (!button || !data) return;
+
+  const action = button.dataset.action;
+  const id = button.dataset.id;
+
+  switch (action) {
+    case "task-toggle":
+      toggleTask(id);
+      break;
+    case "task-edit":
+      editText("tasks", id, "title", "tarea");
+      break;
+    case "task-delete":
+      removeItem("tasks", id);
+      break;
+
+    case "goal-progress":
+      updateGoal(id);
+      break;
+    case "goal-edit":
+      editText("goals", id, "title", "objetivo");
+      break;
+    case "goal-delete":
+      removeItem("goals", id);
+      break;
+
+    case "habit-toggle":
+      toggleHabit(id);
+      break;
+    case "habit-edit":
+      editText("habits", id, "title", "hábito");
+      break;
+    case "habit-delete":
+      removeItem("habits", id);
+      break;
+
+    case "note-edit":
+      editText("notes", id, "title", "título");
+      if (findItem("notes", id)) {
+        editText("notes", id, "content", "contenido");
+      }
+      break;
+    case "note-delete":
+      removeItem("notes", id);
+      break;
+
+    case "movement-edit":
+      editMovement(id);
+      break;
+    case "movement-delete":
+      removeItem("movements", id);
+      break;
+  }
+});
+
+/* =========================================
+   CÁLCULOS
+========================================= */
+
+function totals() {
+  const income = data.movements
+    .filter(item => item.type === "income")
+    .reduce((sum, item) => sum + Number(item.amount), 0);
+
+  const expense = data.movements
+    .filter(item => item.type === "expense")
+    .reduce((sum, item) => sum + Number(item.amount), 0);
+
+  return { income, expense, balance: income - expense };
+}
+
+function habitDoneCount() {
+  return data.habits.filter(habit =>
+    Boolean(data.habitLogs[today()]?.[habit.id])
+  ).length;
+}
+
+/* =========================================
+   RENDERIZADO
+========================================= */
+
+function renderHome() {
+  const pending = data.tasks.filter(item => !item.completed).length;
+  const activeGoals = data.goals.filter(item => item.progress < 100).length;
+  const done = habitDoneCount();
+  const sums = totals();
+
+  $("home-pending").textContent = pending;
+  $("home-goals").textContent = activeGoals;
+  $("home-habits").textContent = done + "/" + data.habits.length;
+  $("home-balance").textContent = money(sums.balance);
+
+  const tasks = data.tasks.filter(item => !item.completed).slice(0, 5);
+  $("home-task-list").innerHTML = tasks.length
+    ? tasks.map(taskHTML).join("")
+    : emptyMessage("No tienes tareas pendientes. ¡Buen trabajo!");
+
+  $("home-habit-list").innerHTML = data.habits.length
+    ? data.habits.map(habitHTML).join("")
+    : emptyMessage("Todavía no has creado hábitos.");
+}
+
+function renderTasks() {
+  $("task-list").innerHTML = data.tasks.length
+    ? data.tasks.map(taskHTML).join("")
+    : emptyMessage("Todavía no tienes tareas.");
+}
+
+function renderGoals() {
+  $("goal-list").innerHTML = data.goals.length
+    ? data.goals.map(goalHTML).join("")
+    : emptyMessage("Todavía no tienes objetivos.");
+}
+
+function renderHabits() {
+  $("habit-list").innerHTML = data.habits.length
+    ? data.habits.map(habitHTML).join("")
+    : emptyMessage("Todavía no tienes hábitos.");
+
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date();
+    date.setDate(date.getDate() - i);
+    const key = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+      .toISOString().slice(0, 10);
+
+    const count = data.habits.filter(habit =>
+      Boolean(data.habitLogs[key]?.[habit.id])
+    ).length;
+
+    days.push({
+      label: date.toLocaleDateString("es-PE", { weekday: "short" }),
+      count,
+      total: data.habits.length
+    });
+  }
+
+  $("habit-calendar").innerHTML = days.map(day => `
+    <div>
+      <div class="day-name">${escapeHTML(day.label)}</div>
+      <div class="day ${day.total && day.count === day.total ? "done" : ""}">
+        ${day.count}/${day.total}
+      </div>
+    </div>
+  `).join("");
+}
+
+function renderNotes() {
+  $("note-list").innerHTML = data.notes.length
+    ? data.notes.map(noteHTML).join("")
+    : emptyMessage("Todavía no has guardado notas.");
+}
+
+function renderFinance() {
+  const sums = totals();
+
+  $("income-total").textContent = money(sums.income);
+  $("expense-total").textContent = money(sums.expense);
+  $("balance-total").textContent = money(sums.balance);
+  $("movement-count").textContent = data.movements.length;
+
+  $("movement-list").innerHTML = data.movements.length
+    ? data.movements.map(movementHTML).join("")
+    : emptyMessage("Todavía no hay movimientos registrados.");
+}
+
+function renderStats() {
+  const completedTasks = data.tasks.filter(item => item.completed).length;
+  const completedGoals = data.goals.filter(item => item.progress === 100).length;
+  const habitLogsCount = Object.values(data.habitLogs)
+    .reduce((sum, day) => sum + Object.values(day).filter(Boolean).length, 0);
+
+  $("stat-tasks").textContent = completedTasks;
+  $("stat-goals").textContent = completedGoals;
+  $("stat-habits").textContent = habitLogsCount;
+  $("stat-notes").textContent = data.notes.length;
+
+  const taskPercent = data.tasks.length
+    ? Math.round(completedTasks / data.tasks.length * 100)
+    : 0;
+
+  $("stats-summary").innerHTML = `
+    <p class="item-description">Progreso de tus tareas</p>
+    <strong>${taskPercent}%</strong>
+    <div class="progress"><span style="width:${taskPercent}%"></span></div>
+    <p class="item-description" style="margin-top:18px">
+      Has completado ${completedTasks} de ${data.tasks.length} tareas.
+    </p>
+    <p class="item-description">
+      Has alcanzado ${completedGoals} de ${data.goals.length} objetivos.
+    </p>
+    <p class="item-description">
+      Has registrado ${habitLogsCount} hábitos completados en total.
+    </p>
+  `;
+}
+
+function renderAll() {
+  if (!data) return;
+
+  $("today-label").textContent = new Date().toLocaleDateString("es-PE", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric"
+  });
+
+  renderHome();
+  renderTasks();
+  renderGoals();
+  renderHabits();
+  renderNotes();
+  renderFinance();
+  renderStats();
+}
+
+/* =========================================
+   INICIO
+========================================= */
+
+$("movement-date").value = today();
+</script>
+
 </body>
 </html>
